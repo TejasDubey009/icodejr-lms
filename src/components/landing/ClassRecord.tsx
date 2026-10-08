@@ -109,7 +109,7 @@ export default function ClassRecord() {
                 <li
                   key={i}
                   aria-hidden
-                  className="grid grid-cols-[52px_1fr] items-center gap-x-3 border-b border-rule px-4 py-2.5 last:border-0 sm:grid-cols-[64px_1fr_auto] sm:px-5"
+                  className="grid grid-cols-[52px_1fr] items-center gap-x-3 border-b border-rule px-4 py-2 last:border-0 sm:grid-cols-[64px_1fr_auto] sm:px-5"
                 >
                   <span className="font-mono text-[11.5px] leading-5 text-rule-strong">··· ··:··</span>
                   <span className="block py-[11px]">
@@ -122,7 +122,7 @@ export default function ClassRecord() {
             return (
               <li
                 key={i}
-                className="grid animate-row-in grid-cols-[52px_1fr] items-start gap-x-3 border-b border-rule px-4 py-2.5 last:border-0 sm:grid-cols-[64px_1fr_auto] sm:px-5"
+                className="grid animate-row-in grid-cols-[52px_1fr] items-start gap-x-3 border-b border-rule px-4 py-2 last:border-0 sm:grid-cols-[64px_1fr_auto] sm:px-5"
               >
                 <span className="num pt-px font-mono text-[11.5px] leading-5 text-ink-3">
                   <span className="text-ink-2">{e.day}</span> {e.time}

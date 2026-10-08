@@ -10,6 +10,8 @@ const FACTS = [
   { value: "6", unit: "mo", label: "Private recordings" },
 ];
 
+const REPLACES = ["Zoom links pasted in chats", "Attendance sheets", "Reminder messages by hand", "Payment trackers"];
+
 export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden bg-canvas">
@@ -18,18 +20,18 @@ export default function Hero() {
         className="ledger-grid pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
       />
       <div className="relative mx-auto max-w-page px-4 pb-16 pt-12 sm:px-6 md:pt-16 lg:px-8 lg:pb-20 lg:pt-20">
-        <p className="meta">Operations platform for live online academies</p>
-        <h1 className="mt-6 max-w-[13ch] text-display font-semibold text-ink lg:max-w-[16ch]">
-          Every live class, accounted for.
-        </h1>
-
-        <div className="mt-10 grid items-start gap-12 lg:mt-12 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-5 xl:col-span-4">
-            <p className="max-w-[40ch] text-[19px] leading-relaxed text-ink-2">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
+          {/* Copy column stretches to the card's height; the credit line sits at its foot */}
+          <div className="flex flex-col lg:col-span-5">
+            <p className="meta">Operations platform for live online academies</p>
+            <h1 className="mt-6 max-w-[13ch] text-display font-semibold text-ink lg:max-w-none lg:text-[clamp(3.25rem,1rem+3.5vw,4.25rem)] lg:leading-[1]">
+              Every live class, accounted for.
+            </h1>
+            <p className="mt-6 max-w-[40ch] text-[19px] leading-relaxed text-ink-2 lg:mt-8">
               Scheduling, Zoom, attendance, credits, payments and parent updates for live online academies. One
               system, nine portals.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3 lg:mb-10">
               <a href="#demo" className="btn btn-primary">
                 Book a demo
                 <ArrowRight className="h-4 w-4" aria-hidden />
@@ -38,12 +40,23 @@ export default function Hero() {
                 See the nine portals
               </a>
             </div>
-            <p className="mt-8 max-w-[40ch] border-t border-rule pt-5 text-[14px] leading-relaxed text-ink-3">
-              Built by iCodeJr to run its own live coding classes.
-            </p>
+            <div className="mt-10 border-t border-rule pt-5 lg:mt-auto">
+              <p className="meta">Replaces</p>
+              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+                {REPLACES.map((r) => (
+                  <li
+                    key={r}
+                    className="text-[15px] text-ink-2 line-through decoration-ink-3/60 decoration-[1.5px]"
+                  >
+                    {r}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-5 text-[13px] text-ink-3">Built by iCodeJr to run its own live coding classes.</p>
+            </div>
           </div>
 
-          <div className="lg:col-span-7 xl:col-span-8">
+          <div className="lg:col-span-7">
             <ClassRecord />
             <p className="mt-3 text-caption text-ink-3">Sample session. Every line is written automatically.</p>
           </div>
