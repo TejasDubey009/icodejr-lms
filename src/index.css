@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Ledger-paper canvas, white surfaces, navy ink taken from the iCodeJr wordmark */
+    --canvas: 210 13% 94%;
+    --surface: 0 0% 100%;
+    --surface-2: 210 11% 97%;
+
+    --ink: 208 66% 13%;
+    --ink-2: 208 23% 29%;
+    --ink-3: 208 13% 42%;
+
+    --rule: 207 15% 86%;
+    --rule-strong: 208 15% 76%;
+
+    /* Reserved for numbers, live data and active states — never a section fill */
+    --data: 208 86% 42%;
+    --navy: 208 73% 27%;
+
+    /* Status semantics, only inside product UI */
+    --ok: 146 65% 30%;
+    --warn: 34 84% 36%;
+    --alert: 8 66% 44%;
+  }
+
+  * {
+    @apply border-rule;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    font-size: 16px;
+    line-height: 1.5;
+    font-stretch: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Let wide product mockups scroll inside their frames instead of stretching the layout grid */
+  .grid > * {
+    min-width: 0;
+  }
+
+  ::selection {
+    background: hsl(var(--data) / 0.18);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--data));
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Monospace meta label: timestamps, indices, data captions */
+  .meta {
+    @apply font-mono text-meta uppercase text-ink-3;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Faint ledger grid used behind the hero and record surfaces */
+  .ledger-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--rule) / 0.7) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--rule) / 0.7) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .btn {
+    @apply inline-flex h-11 select-none items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 text-[15px] font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-ink text-white hover:bg-navy;
+  }
+  .btn-secondary {
+    @apply border border-rule-strong bg-surface text-ink hover:border-ink;
+  }
+  .btn-sm {
+    @apply h-9 px-4 text-sm;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-caption font-medium;
+  }
+
+  .field {
+    @apply h-11 w-full rounded-[4px] border border-rule-strong bg-surface px-3 text-[15px] text-ink placeholder:text-ink-3 transition-colors hover:border-ink-3 focus:border-data focus:outline-none focus:ring-2 focus:ring-data/20;
+  }
+
+  .link {
+    @apply text-data underline decoration-data/30 underline-offset-4 transition-colors hover:decoration-data;
+  }
+}
