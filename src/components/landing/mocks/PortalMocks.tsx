@@ -18,7 +18,7 @@ function Panel({ title, meta, children, className }: { title: string; meta?: Rea
 
 function Kpi({ label, value, note, tone }: { label: string; value: string; note?: string; tone?: "data" | "alert" | "warn" }) {
   return (
-    <div className="px-4 py-3 sm:px-5">
+    <div className="px-3 py-3">
       <p className="meta">{label}</p>
       <p
         className={cn(
@@ -37,7 +37,7 @@ function Kpi({ label, value, note, tone }: { label: string; value: string; note?
 }
 
 function KpiRow({ children }: { children: ReactNode }) {
-  return <div className="grid grid-cols-2 divide-x divide-rule border-b border-rule sm:grid-cols-4 [&>*:nth-child(3)]:border-l-0 sm:[&>*:nth-child(3)]:border-l [&>*:nth-child(-n+2)]:border-b sm:[&>*:nth-child(-n+2)]:border-b-0">{children}</div>;
+  return <div className="cq-cols gap-px border-b border-rule bg-rule [&>*]:bg-surface">{children}</div>;
 }
 
 function Line({ children, className }: { children: ReactNode; className?: string }) {
@@ -74,8 +74,8 @@ export function AdminMock() {
               <span className="flex min-w-0 items-center gap-2">
                 <Initials name={n} />
                 <span className="min-w-0">
-                  <span className="block truncate text-[13px] font-medium text-ink">{n}</span>
-                  <span className="block truncate text-[11.5px] text-ink-3">{c}</span>
+                  <span className="block text-[13px] font-medium text-ink">{n}</span>
+                  <span className="block text-[11.5px] text-ink-3">{c}</span>
                 </span>
               </span>
               <span className={t}>{d}</span>
@@ -106,10 +106,10 @@ export function AdminMock() {
 
 export function OpsMock() {
   const sessions: [string, string, string, ReactNode][] = [
-    ["16:30", "Minecraft Education · Lesson 2", "Sara M. → Yara B.", <Status tone="ok" dot>Live</Status>],
-    ["15:30", "Python Foundations · Lesson 9", "Omar K. → Noor A.", <Status tone="alert">No-show flagged</Status>],
-    ["17:00", "Trial · Python", "Omar K. → Hana T.", <Status tone="data">Starts in 12 min</Status>],
-    ["15:00", "Web Design · Lesson 3", "Ali F. → Karim D.", <Status tone="warn">Report pending</Status>],
+    ["16:30", "Minecraft · Lesson 2", "Sara M. → Yara B.", <Status tone="ok" dot>Live</Status>],
+    ["15:30", "Python · Lesson 9", "Omar K. → Noor A.", <Status tone="alert">No-show</Status>],
+    ["17:00", "Trial · Python", "Omar K. → Hana T.", <Status tone="data">In 12 min</Status>],
+    ["15:00", "Web Design · Lesson 3", "Ali F. → Karim D.", <Status tone="warn">Report due</Status>],
   ];
   return (
     <>
@@ -119,8 +119,8 @@ export function OpsMock() {
             <span className="flex min-w-0 items-start gap-3">
               <span className={cn(t, "pt-0.5")}>{time}</span>
               <span className="min-w-0">
-                <span className="block truncate text-[13px] font-medium text-ink">{title}</span>
-                <span className="block truncate text-[11.5px] text-ink-3">{who}</span>
+                <span className="block text-[13px] font-medium leading-snug text-ink">{title}</span>
+                <span className="block text-[11.5px] text-ink-3">{who}</span>
               </span>
             </span>
             {s}
@@ -128,7 +128,7 @@ export function OpsMock() {
         ))}
       </Panel>
       <Panel title="Requests from parents and instructors">
-        <div className="grid grid-cols-2 gap-x-6 sm:grid-cols-4">
+        <div className="cq-cols gap-x-6">
           {[
             ["Reschedules", "2"],
             ["Cancellations", "1"],
@@ -327,8 +327,8 @@ export function CounsellorMock() {
             <span className="flex min-w-0 items-center gap-2">
               <Initials name={n} />
               <span className="min-w-0">
-                <span className="block truncate text-[13px] font-medium text-ink">{n}</span>
-                <span className="block truncate text-[11.5px] text-ink-3">{note}</span>
+                <span className="block text-[13px] font-medium text-ink">{n}</span>
+                <span className="block text-[11.5px] text-ink-3">{note}</span>
               </span>
             </span>
             <span className="flex items-center gap-2">
@@ -354,15 +354,15 @@ export function CounsellorMock() {
 export function SalesMock() {
   const cols: { stage: string; leads: { n: string; d: string; tag?: ReactNode }[] }[] = [
     { stage: "New", leads: [{ n: "Rania K.", d: "Meta Ads · 2 kids" }, { n: "Omar S.", d: "Referral" }] },
-    { stage: "Trial scheduled", leads: [{ n: "Hana T.", d: "Thu 17:00", tag: <Status tone="data">Join link sent</Status> }] },
+    { stage: "Trial set", leads: [{ n: "Hana T.", d: "Thu 17:00", tag: <Status tone="data">Link sent</Status> }] },
     { stage: "Trial done", leads: [{ n: "Faris M.", d: "Feedback 5/5" }] },
-    { stage: "Won", leads: [{ n: "Dana E.", d: "24 sessions", tag: <Status tone="warn">Manager approval</Status> }] },
+    { stage: "Won", leads: [{ n: "Dana E.", d: "24 sessions", tag: <Status tone="warn">To approve</Status> }] },
   ];
   return (
-    <div className="grid grid-cols-2 gap-px bg-rule sm:grid-cols-4">
+    <div className="cq-cols gap-px bg-rule">
       {cols.map((c) => (
-        <div key={c.stage} className="min-h-[300px] bg-surface-2 p-3">
-          <p className="meta flex justify-between">
+        <div key={c.stage} className="min-h-[150px] min-w-0 bg-surface-2 p-3">
+          <p className="meta flex justify-between gap-2 whitespace-nowrap">
             {c.stage}
             <span className="num text-ink">{c.leads.length}</span>
           </p>
@@ -392,32 +392,35 @@ export function FinanceMock() {
     ["Mira S.", "Renewal", "3,200", "Upcoming", "neutral"],
   ];
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[480px] text-left">
+    <div>
+      <table className="w-full text-left">
         <caption className="sr-only">Sample payment receipts</caption>
         <thead>
           <tr className="border-b border-rule bg-surface-2">
-            {["Student", "Plan", "AED", "Status"].map((h) => (
-              <th key={h} scope="col" className={cn("meta px-4 py-2 font-normal first:pl-5", h === "AED" && "text-right")}>
-                {h}
-              </th>
-            ))}
+            <th scope="col" className="meta py-2 pl-4 pr-3 font-normal">Student</th>
+            <th scope="col" className="cq-wide meta px-3 py-2 font-normal">Plan</th>
+            <th scope="col" className="cq-wide meta px-3 py-2 text-right font-normal">AED</th>
+            <th scope="col" className="meta py-2 pl-3 pr-4 font-normal">Status</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(([n, plan, amt, s, tone]) => (
+          {rows.map(([n, plan, amt, st, tone]) => (
             <tr key={n} className="border-b border-rule last:border-0">
-              <td className="px-4 py-2.5 pl-5 text-[13px] font-medium text-ink">{n}</td>
-              <td className="px-4 py-2.5 text-[12.5px] text-ink-2">{plan}</td>
-              <td className="num px-4 py-2.5 text-right font-mono text-[12.5px] text-ink">{amt}</td>
-              <td className="px-4 py-2.5">
-                <Status tone={tone}>{s}</Status>
+              <td className="py-2.5 pl-4 pr-3 text-[13px] font-medium text-ink">
+                {n}
+                <span className="cq-narrow block text-[11.5px] font-normal text-ink-3">{plan}</span>
+              </td>
+              <td className="cq-wide px-3 py-2.5 text-[12.5px] text-ink-2">{plan}</td>
+              <td className="cq-wide num px-3 py-2.5 text-right text-[12.5px] text-ink">{amt}</td>
+              <td className="py-2.5 pl-3 pr-4">
+                <Status tone={tone}>{st}</Status>
+                <span className="cq-narrow num mt-1 block text-[11.5px] text-ink-2">AED {amt}</span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-rule bg-surface-2 px-5 py-2.5 text-[11.5px] text-ink-3">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-rule bg-surface-2 px-4 py-2.5 text-[11.5px] text-ink-3">
         <span>
           Confirmed this month <span className="num font-medium text-ink">AED 38,400</span>
         </span>
@@ -451,7 +454,7 @@ export function CurriculumMock() {
         {lessons.map(([name, items, s]) => (
           <Line key={name}>
             <span className="min-w-0">
-              <span className="block truncate text-[13px] font-medium text-ink">{name}</span>
+              <span className="block text-[13px] font-medium text-ink">{name}</span>
               <span className="mt-0.5 flex flex-wrap gap-1">
                 {items.map((i) => (
                   <span key={i} className="rounded-[3px] bg-surface-2 px-1.5 py-px text-[10.5px] text-ink-3 ring-1 ring-rule">

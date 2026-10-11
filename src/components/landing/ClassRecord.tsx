@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { Frame, Status } from "./primitives";
+import { usePrefersReducedMotion } from "@/hooks";
 
 type Tone = "ok" | "warn" | "data" | "neutral";
 
@@ -28,12 +29,22 @@ const ENTRIES: Entry[] = [
 
 const STEP_MS = 650;
 
-export default function ClassRecord() {
+interface ClassRecordProps {
+  /** Reports how many lines of the record are written, so surrounding UI can react. */
+  onProgress?: (lines: number) => void;
+}
+
+export default function ClassRecord({ onProgress }: ClassRecordProps) {
   const reduced = usePrefersReducedMotion();
-  const [shown, setShown] = useState(reduced ? ENTRIES.length : 0);
+  const [shown, setShown] = useState(0);
   const [run, setRun] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+
+  // No playback for reduced motion: show the finished record.
+  useEffect(() => {
+    if (reduced) setShown(ENTRIES.length);
+  }, [reduced]);
 
   // Start the playback only once the record is on screen.
   useEffect(() => {
@@ -65,6 +76,10 @@ export default function ClassRecord() {
     return () => window.clearInterval(id);
   }, [run, reduced]);
 
+  useEffect(() => {
+    onProgress?.(shown);
+  }, [shown, onProgress]);
+
   const done = shown >= ENTRIES.length;
 
   return (
@@ -76,13 +91,13 @@ export default function ClassRecord() {
             <button
               type="button"
               onClick={() => setRun((r) => r + 1)}
-              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3 hover:text-ink"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-ink-3 hover:text-ink"
             >
               <RotateCcw className="h-3 w-3" aria-hidden />
               Replay
             </button>
           ) : (
-            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-data">
+            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-data">
               <span className="h-1.5 w-1.5 animate-blink rounded-full bg-data" aria-hidden />
               Recording
             </span>
@@ -129,7 +144,7 @@ export default function ClassRecord() {
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[13.5px] font-medium leading-5 text-ink">{e.event}</span>
-                  <span className="block truncate text-[12.5px] leading-5 text-ink-3">
+                  <span className="block text-[12.5px] leading-5 text-ink-3">
                     {e.detail}
                     <span className="text-rule-strong"> · </span>
                     {e.by}
@@ -148,11 +163,4 @@ export default function ClassRecord() {
       </Frame>
     </div>
   );
-}
-
-function usePrefersReducedMotion() {
-  const [reduced] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-  return reduced;
 }

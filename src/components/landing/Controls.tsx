@@ -1,4 +1,4 @@
-import { Frame, Initials, Section, Status } from "./primitives";
+import { Frame, Initials, Section, Stage, Status } from "./primitives";
 
 const QUEUES = [
   { name: "Instructor leave", count: 3, note: "Shows clashing sessions" },
@@ -26,44 +26,46 @@ export default function Controls() {
       id="controls"
       index="07"
       label="Controls"
-      title="Approvals in queues. Access by role."
+      title="No more “who approved this?”"
       intro={<p>Money, time off and student records: one person asks, another approves.</p>}
     >
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+      <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-6">
-          <Frame path="admin / approvals" bodyClassName="p-0">
-            <ul>
-              {QUEUES.map((q) => (
-                <li key={q.name} className="flex items-center justify-between gap-4 border-b border-rule px-4 py-3 last:border-0 sm:px-5">
-                  <span className="min-w-0">
-                    <span className="block text-[14px] font-medium text-ink">{q.name}</span>
-                    {q.note && <span className="block truncate text-[12.5px] text-ink-3">{q.note}</span>}
-                  </span>
-                  {q.count > 0 ? (
-                    <Status tone="data">
-                      <span className="num">{q.count}</span> pending
-                    </Status>
-                  ) : (
-                    <Status>Clear</Status>
-                  )}
-                </li>
-              ))}
-            </ul>
-            <div className="flex items-center gap-3 border-t border-rule bg-surface-2 px-4 py-3 sm:px-5">
-              <Initials name="Nadia R" />
-              <p className="text-[12.5px] text-ink-2">
-                <span className="font-medium text-ink">Leave · Omar K.</span> 22–24 Oct clashes with{" "}
-                <span className="num font-medium text-alert">5 sessions</span>. Ops reschedules or cancels each one.
-              </p>
-            </div>
-          </Frame>
+          <Stage tone="aurora">
+            <Frame path="admin / approvals" bodyClassName="p-0">
+              <ul>
+                {QUEUES.map((q) => (
+                  <li key={q.name} className="flex items-center justify-between gap-4 border-b border-rule px-4 py-3 last:border-0 sm:px-5">
+                    <span className="min-w-0">
+                      <span className="block text-[14px] font-medium text-ink">{q.name}</span>
+                      {q.note && <span className="block text-[12.5px] leading-snug text-ink-3">{q.note}</span>}
+                    </span>
+                    {q.count > 0 ? (
+                      <Status tone="data">
+                        <span className="num">{q.count}</span> pending
+                      </Status>
+                    ) : (
+                      <Status>Clear</Status>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex items-center gap-3 border-t border-rule bg-surface-2 px-4 py-3 sm:px-5">
+                <Initials name="Nadia R" />
+                <p className="text-[12.5px] text-ink-2">
+                  <span className="font-medium text-ink">Leave · Omar K.</span> 22–24 Oct clashes with{" "}
+                  <span className="num font-medium text-alert">5 sessions</span>. Ops reschedules or cancels each one.
+                </p>
+              </div>
+            </Frame>
+          </Stage>
         </div>
         <div className="lg:col-span-6">
           <dl className="divide-y divide-rule border-y border-rule">
             {SAFEGUARDS.map((s) => (
               <div key={s.title} className="py-5">
-                <dt className="text-[16px] font-semibold text-ink">{s.title}</dt>
-                <dd className="mt-1.5 text-[15px] leading-relaxed text-ink-2">{s.body}</dd>
+                <dt className="font-display text-[17px] font-medium text-ink">{s.title}</dt>
+                <dd className="mt-1.5 text-[15px] leading-relaxed text-ink-3">{s.body}</dd>
               </div>
             ))}
           </dl>

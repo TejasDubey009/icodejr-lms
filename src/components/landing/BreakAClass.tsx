@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, CalendarClock, CircleDollarSign, FileWarning, Mail, MessageCircle, UserX } from "lucide-react";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "@/hooks";
 
 type Channel = "bell" | "email" | "whatsapp";
 
@@ -105,15 +107,36 @@ const STEP_MS = 520;
 export default function BreakAClass() {
   const [active, setActive] = useState(0);
   const [shown, setShown] = useState(0);
-  const reduced = useRef(
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const reduced = usePrefersReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
   const scenario = SCENARIOS[active];
   const done = shown >= scenario.steps.length;
   const sent = scenario.steps.reduce((n, s) => n + (s.via?.length ?? 0), 0);
 
+  // Hold the first scenario until the simulator scrolls into view, so visitors see it play.
   useEffect(() => {
-    if (reduced.current) {
+    const el = rootRef.current;
+    if (!el || !("IntersectionObserver" in window)) {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reduced) {
       setShown(scenario.steps.length);
       return;
     }
@@ -125,10 +148,10 @@ export default function BreakAClass() {
       if (i >= scenario.steps.length) window.clearInterval(id);
     }, STEP_MS);
     return () => window.clearInterval(id);
-  }, [active, scenario.steps.length]);
+  }, [active, inView, reduced, scenario.steps.length]);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
+    <div ref={rootRef} className="grid gap-8 lg:grid-cols-12 lg:gap-10">
       <div className="lg:col-span-4">
         <p className="meta">Pick what goes wrong</p>
         <div role="radiogroup" aria-label="Scenario" className="mt-4 flex flex-wrap gap-2 lg:flex-col lg:items-start">
@@ -143,24 +166,42 @@ export default function BreakAClass() {
                 aria-checked={on}
                 onClick={() => setActive(i)}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-left text-[14px] transition-colors",
-                  on ? "border-ink bg-ink text-white" : "border-rule-strong bg-surface text-ink hover:border-ink",
+                  "relative isolate inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-left font-display text-[14.5px] transition-colors duration-200",
+                  on
+                    ? "border-brand font-medium text-night"
+                    : "border-rule-strong/60 bg-surface/70 text-ink-2 hover:border-brand hover:text-ink",
                 )}
               >
-                <Icon className={cn("h-4 w-4 shrink-0", on ? "text-white" : "text-data")} aria-hidden />
+                {on && (
+                  <m.span
+                    aria-hidden
+                    layoutId="scenario-pill"
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    className="absolute inset-0 -z-10 rounded-full bg-brand"
+                  />
+                )}
+                <Icon className={cn("h-4 w-4 shrink-0", on ? "text-night" : "text-data")} aria-hidden />
                 {s.label}
               </button>
             );
           })}
         </div>
-        <Mascot done={done} line={done ? scenario.result : scenario.thinking} still={reduced.current} />
+        <Mascot done={done} line={done ? scenario.result : scenario.thinking} still={reduced} />
       </div>
 
       <div className="lg:col-span-8">
-        <div className="relative overflow-hidden rounded-frame border border-rule-strong bg-surface">
+        <div className="card relative overflow-hidden">
+          {/* Playback progress */}
+          <m.span
+            aria-hidden
+            initial={false}
+            animate={{ scaleX: Math.min(shown, scenario.steps.length) / scenario.steps.length }}
+            transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
+            className="absolute inset-x-0 top-0 z-10 h-[2px] origin-left bg-gradient-to-r from-brand to-sun"
+          />
           <div className="flex items-center justify-between border-b border-rule bg-surface-2 px-4 py-2.5 sm:px-5">
-            <span className="font-mono text-[12px] text-ink-3">Python Foundations · Lesson 7 · Layla H.</span>
-            <span className="num font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
+            <span className="text-[13px] text-ink-3">Python Foundations · Lesson 7 · Layla H.</span>
+            <span className="num text-[12px] font-medium text-ink-3">
               {Math.min(shown, scenario.steps.length)}/{scenario.steps.length}
             </span>
           </div>
@@ -218,12 +259,12 @@ export default function BreakAClass() {
           <div className="flex items-center justify-between gap-4 border-t border-rule bg-surface-2 px-4 py-3 sm:px-5">
             <p className="text-[13px] text-ink-2">
               Messages you didn't send: <span className="num font-semibold text-ink">{done ? sent : "…"}</span>
-              {done && <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ok sm:hidden">· Handled</span>}
+              {done && <span className="ml-2 text-[12px] font-medium text-ok sm:hidden">· Handled</span>}
             </p>
             <button
               type="button"
               onClick={() => setActive((a) => (a + 1) % SCENARIOS.length)}
-              className="whitespace-nowrap text-[13px] font-medium text-data hover:text-navy"
+              className="-my-2 whitespace-nowrap px-1 py-2 text-[14px] font-medium text-data hover:text-navy"
             >
               Next problem →
             </button>

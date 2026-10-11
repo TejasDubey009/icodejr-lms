@@ -27,17 +27,17 @@ export default function Automations() {
     >
       <BreakAClass />
 
-      <div className="mt-16 border-t border-ink">
-        <div className="grid grid-cols-12 gap-4 border-b border-rule py-3">
+      <div className="card mt-14 overflow-hidden">
+        <div className="grid grid-cols-12 gap-4 bg-surface-2/70 px-5 py-3.5 sm:px-7">
           <span className="meta col-span-7 sm:col-span-6">Always running</span>
           <span className="meta col-span-5 sm:col-span-3">When</span>
           <span className="meta hidden sm:col-span-3 sm:block">Who's told</span>
         </div>
         <ul>
           {RULES.map((r) => (
-            <li key={r.name} className="grid grid-cols-12 items-baseline gap-4 border-b border-rule py-3">
-              <span className="col-span-7 text-[15px] font-medium text-ink sm:col-span-6">{r.name}</span>
-              <span className="col-span-5 font-mono text-[12px] text-data sm:col-span-3">{r.cadence}</span>
+            <li key={r.name} className="grid grid-cols-12 items-baseline gap-4 border-t border-rule px-5 py-3.5 sm:px-7">
+              <span className="col-span-7 font-display text-[15.5px] text-ink sm:col-span-6">{r.name}</span>
+              <span className="num col-span-5 text-[13.5px] text-data sm:col-span-3">{r.cadence}</span>
               <span className="hidden text-[14px] text-ink-3 sm:col-span-3 sm:block">{r.tells}</span>
             </li>
           ))}

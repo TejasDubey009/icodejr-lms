@@ -3,25 +3,49 @@
 @tailwind utilities;
 
 @layer base {
+  /* Page chrome: iCodeJr navy canvas with brand-blue light, white type */
   :root {
-    /* Ledger-paper canvas, white surfaces, navy ink taken from the iCodeJr wordmark */
-    --canvas: 210 13% 94%;
+    color-scheme: dark;
+
+    --canvas: 219 61% 10%;
+    --surface: 219 61% 15%;
+    --surface-2: 219 56% 19%;
+
+    --ink: 0 0% 100%;
+    --ink-2: 219 37% 84%;
+    --ink-3: 219 24% 63%;
+
+    --rule: 220 51% 21%;
+    --rule-strong: 220 43% 32%;
+
+    --data: 207 75% 66%;
+    --navy: 207 85% 76%;
+
+    --ok: 155 59% 50%;
+    --warn: 48 96% 53%;
+    --alert: 4 100% 70%;
+  }
+
+  /* Product screens stay light, like the LMS itself, and sit on colour as islands */
+  .light {
+    color-scheme: light;
+    color: hsl(var(--ink));
+
+    --canvas: 260 100% 99%;
     --surface: 0 0% 100%;
-    --surface-2: 210 11% 97%;
+    --surface-2: 225 20% 96%;
 
-    --ink: 208 66% 13%;
-    --ink-2: 208 23% 29%;
-    --ink-3: 208 13% 42%;
+    --ink: 219 61% 15%;
+    --ink-2: 220 26% 31%;
+    --ink-3: 216 13% 44%;
 
-    --rule: 207 15% 86%;
-    --rule-strong: 208 15% 76%;
+    --rule: 220 29% 92%;
+    --rule-strong: 217 27% 83%;
 
-    /* Reserved for numbers, live data and active states — never a section fill */
-    --data: 208 86% 42%;
-    --navy: 208 73% 27%;
+    --data: 209 65% 45%;
+    --navy: 216 55% 30%;
 
-    /* Status semantics, only inside product UI */
-    --ok: 146 65% 30%;
+    --ok: 152 65% 30%;
     --warn: 34 84% 36%;
     --alert: 8 66% 44%;
   }
@@ -32,21 +56,27 @@
 
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 80px;
+    scroll-padding-top: 96px;
     -webkit-text-size-adjust: 100%;
   }
 
+  :root {
+    --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
   body {
-    @apply bg-canvas font-sans text-ink antialiased;
+    @apply relative bg-canvas font-sans text-ink antialiased;
     font-size: 16px;
     line-height: 1.5;
-    font-stretch: 100%;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "calt", "cv11";
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1,
   h2,
   h3 {
+    @apply font-display;
     text-wrap: balance;
   }
 
@@ -60,7 +90,7 @@
   }
 
   ::selection {
-    background: hsl(var(--data) / 0.18);
+    background: rgb(66 148 215 / 0.4);
   }
 
   :focus-visible {
@@ -68,9 +98,58 @@
     outline-offset: 2px;
   }
 
+  /* Scroll reveal. Only active once scripts run (html.js); see useScrollReveal */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s var(--ease-out),
+      transform 0.6s var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .js [data-reveal].is-in,
+  .reveal-all [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Entrance for content that is on screen at load. Pure CSS, so it never waits on a script. */
+  .js .rise {
+    animation: rise 0.7s var(--ease-out) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+
+  /* Gradient text needs a real colour when the system overrides colours */
+  @media (forced-colors: active) {
+    .text-gradient,
+    .text-sunset,
+    .text-aurora {
+      background: none;
+      color: CanvasText;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
+    }
+    .js [data-reveal] {
+      opacity: 1;
+      transform: none;
+    }
+    .js .rise {
+      animation: none;
+    }
+    .edge-light::before,
+    .flow-line,
+    .flow-line-back {
+      display: none;
     }
     *,
     *::before,
@@ -83,34 +162,319 @@
 }
 
 @layer components {
-  /* Monospace meta label: timestamps, indices, data captions */
-  .meta {
-    @apply font-mono text-meta uppercase text-ink-3;
+  /* ---------- Atmosphere ---------- */
+
+  /* Fine film grain over the whole page, so flat navy reads as a material */
+  .grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .num {
+  /* Dot matrix that fades out from the top centre of the hero */
+  .dot-grid {
+    background-image: radial-gradient(rgb(255 255 255 / 0.11) 1px, transparent 1.5px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 20%, #000 15%, transparent 72%);
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 20%, #000 15%, transparent 72%);
+  }
+
+  /* Shaft of light falling onto the product */
+  .light-beam {
+    background: linear-gradient(180deg, rgb(140 200 250 / 0.5) 0%, rgb(66 148 215 / 0.2) 38%, transparent 78%);
+    filter: blur(56px);
+    animation: beam-breathe 7s ease-in-out infinite;
+  }
+  @keyframes beam-breathe {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 0.9;
+    }
+  }
+
+  /* A point of light that travels around an element's edge */
+  @property --edge-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+  .edge-light {
+    position: relative;
+  }
+  .edge-light::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 2px;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--edge-angle),
+      transparent 0%,
+      transparent 72%,
+      rgb(255 255 255 / 0.95) 86%,
+      #facc15 93%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: edge-travel 7s linear infinite;
+  }
+  @keyframes edge-travel {
+    to {
+      --edge-angle: 360deg;
+    }
+  }
+
+  /* Frosted chip that floats over the product */
+  .glass {
+    @apply rounded-2xl border border-white/20 text-white;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.07));
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.25),
+      0 14px 40px -12px rgb(0 0 0 / 0.6);
+  }
+
+  /* Oversized outline wordmark in the footer */
+  .wordmark {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(255 255 255 / 0.16);
+    -webkit-mask-image: linear-gradient(180deg, #000 10%, transparent 92%);
+    mask-image: linear-gradient(180deg, #000 10%, transparent 92%);
+  }
+
+  /* Data travelling along a connector line */
+  .flow-line {
+    stroke-dasharray: 10 90;
+    animation: flow 2.6s linear infinite;
+  }
+  .flow-line-back {
+    stroke-dasharray: 10 90;
+    animation: flow 2.6s linear infinite reverse;
+  }
+  @keyframes flow {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Small label above groups of content */
+  .meta {
+    @apply font-display text-meta font-medium text-ink-3;
+  }
+
+  .num,
+  .font-mono {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Faint ledger grid used behind the hero and record surfaces */
-  .ledger-grid {
-    background-image:
-      linear-gradient(to right, hsl(var(--rule) / 0.7) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--rule) / 0.7) 1px, transparent 1px);
-    background-size: 48px 48px;
+  /* Headline fill: white fading out, as light falls off across the letters */
+  .text-gradient {
+    background: linear-gradient(160deg, #fff 10%, rgb(255 255 255 / 0.6) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Gold numerals */
+  .text-sunset {
+    background: linear-gradient(90deg, #facc15 0%, #f99406 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-aurora {
+    background: linear-gradient(110deg, #6db6f2 0%, #c690ee 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* The yellow block icodejr.com puts behind the words that matter */
+  .hl {
+    display: inline-block;
+    border-radius: 0.28em;
+    background: #facc15;
+    padding: 0 0.22em 0.04em;
+    color: #0f1f3d;
+    -webkit-text-fill-color: #0f1f3d;
+  }
+
+  /* Pill with the blue-to-purple brand edge */
+  .pill-grad {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display text-[14px] text-ink;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(#0f1f3d, #0f1f3d) padding-box,
+      linear-gradient(135deg, #4294d7 0%, #9739c6 100%) border-box;
+  }
+
+  .divider-fade {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgb(46 69 115) 50%, transparent 100%);
+  }
+
+  .glow-top {
+    background: radial-gradient(
+      950px 950px at 50% 0px,
+      rgb(66 148 215 / 0.26) 0%,
+      rgb(66 148 215 / 0.13) 33%,
+      rgb(66 148 215 / 0.03) 66%,
+      transparent 100%
+    );
+  }
+  .glow-corners {
+    background:
+      radial-gradient(600px 600px at 0px 0px, rgb(66 148 215 / 0.17) 0%, transparent 100%),
+      radial-gradient(600px 600px at 100% 100%, rgb(146 57 199 / 0.17) 0%, transparent 100%);
+  }
+
+  /* Vivid tiles that product screens sit on. Each casts a glow in its own colour. */
+  .stage {
+    @apply rounded-stage p-3 sm:p-5 lg:p-6 xl:p-8;
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.16),
+      0 40px 110px -45px var(--stage-glow, transparent);
+  }
+  .stage-sunset {
+    --stage-glow: rgb(110 110 215 / 0.75);
+    background: linear-gradient(135deg, #4294d7 0%, #9739c6 100%);
+  }
+  .stage-candy {
+    --stage-glow: rgb(249 160 20 / 0.6);
+    background: linear-gradient(135deg, #facc15 0%, #f78511 100%);
+  }
+  .stage-aurora {
+    --stage-glow: rgb(66 148 215 / 0.7);
+    background: linear-gradient(135deg, #7cc4f5 0%, #2f7fcb 100%);
+  }
+  .stage-dusk {
+    --stage-glow: rgb(66 148 215 / 0.55);
+    background: linear-gradient(135deg, #1b3a70 0%, #4294d7 100%);
+  }
+
+  /* Product screens respond to their own width, not the viewport's: the same frame is
+     wide on a tablet (one column) and narrow on a laptop (beside the copy). */
+  .frame-cq {
+    container-type: inline-size;
+  }
+  /* cq-wide: only in roomy frames. cq-narrow: only in tight ones. cq-xwide: needs a big frame. */
+  @container (max-width: 519px) {
+    .cq-wide {
+      display: none !important;
+    }
+  }
+  @container (min-width: 520px) {
+    .cq-narrow {
+      display: none !important;
+    }
+  }
+  @container (max-width: 639px) {
+    .cq-xwide {
+      display: none !important;
+    }
+  }
+  /* Two columns in a tight frame, four in a roomy one. Hairlines come from the 1px gap. */
+  .cq-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @container (min-width: 520px) {
+    .cq-cols {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  /* Weekly schedule: three days in a tight frame, the full week otherwise */
+  .sched-grid {
+    display: grid;
+    grid-template-columns: 44px repeat(3, minmax(0, 1fr));
+  }
+  .sched-extra {
+    display: none;
+  }
+  @container (min-width: 480px) {
+    .sched-grid {
+      grid-template-columns: 48px repeat(5, minmax(0, 1fr));
+    }
+    .sched-extra {
+      display: block;
+    }
+  }
+
+  /* Dark raised card: a touch lighter at the top, with a hairline of light on the edge */
+  .card {
+    @apply relative rounded-frame border border-rule-strong/60;
+    background: linear-gradient(180deg, hsl(var(--surface-2) / 0.7) 0%, hsl(var(--surface)) 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  }
+  /* A soft light follows the pointer across the card (see useSpotlight) */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-out);
+    background: radial-gradient(
+      380px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(109 179 242 / 0.14),
+      transparent 55%
+    );
+  }
+  @media (hover: hover) {
+    .card:hover::after {
+      opacity: 1;
+    }
   }
 
   .btn {
-    @apply inline-flex h-11 select-none items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 text-[15px] font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex h-12 select-none items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 font-display text-[16px] font-medium disabled:pointer-events-none disabled:opacity-50;
+    transition:
+      background-color 140ms var(--ease-out),
+      border-color 140ms var(--ease-out),
+      box-shadow 140ms var(--ease-out),
+      transform 100ms var(--ease-out);
   }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn > svg {
+    transition: transform 160ms var(--ease-out);
+  }
+  .btn:hover > svg {
+    transform: translateX(3px);
+  }
+  /* Brand blue with navy type: 5.5:1 contrast, where white on this blue is only 3.3:1 */
   .btn-primary {
-    @apply bg-ink text-white hover:bg-navy;
+    @apply border border-brand bg-brand font-semibold text-night hover:border-[#6db3f2] hover:bg-[#6db3f2];
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 10px 28px -10px rgb(66 148 215 / 0.7);
   }
   .btn-secondary {
-    @apply border border-rule-strong bg-surface text-ink hover:border-ink;
+    @apply border border-brand/60 bg-transparent text-white hover:border-brand hover:bg-brand/15;
+  }
+  .btn-quiet {
+    @apply bg-[rgb(22_41_77/0.8)] text-white hover:bg-[rgb(34_58_104/0.9)];
   }
   .btn-sm {
-    @apply h-9 px-4 text-sm;
+    @apply h-10 px-5 text-[14px];
   }
 
   .chip {
@@ -118,10 +482,10 @@
   }
 
   .field {
-    @apply h-11 w-full rounded-[4px] border border-rule-strong bg-surface px-3 text-[15px] text-ink placeholder:text-ink-3 transition-colors hover:border-ink-3 focus:border-data focus:outline-none focus:ring-2 focus:ring-data/20;
+    @apply h-12 w-full rounded-panel border border-rule-strong bg-canvas/60 px-4 text-[15px] text-ink placeholder:text-ink-3 transition-colors hover:border-ink-3 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
   }
 
   .link {
-    @apply text-data underline decoration-data/30 underline-offset-4 transition-colors hover:decoration-data;
+    @apply text-data underline decoration-data/40 underline-offset-4 transition-colors hover:decoration-data;
   }
 }

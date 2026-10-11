@@ -1,14 +1,18 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
 import LandingPage from "@/pages/LandingPage";
+import { MotionProvider } from "@/motion";
 
 export default function App() {
+  // One page: old marketing aliases (/pricing, /demo, …) and unknown paths settle on "/".
+  useEffect(() => {
+    if (window.location.pathname !== "/") {
+      window.history.replaceState(null, "", "/" + window.location.search + window.location.hash);
+    }
+  }, []);
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        {/* Old marketing aliases and any unknown path land on the page */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <MotionProvider>
+      <LandingPage />
+    </MotionProvider>
   );
 }

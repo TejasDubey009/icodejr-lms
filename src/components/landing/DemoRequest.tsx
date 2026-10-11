@@ -84,22 +84,23 @@ export default function DemoRequest() {
   };
 
   return (
-    <section id="demo" className="border-t border-rule bg-surface">
-      <div className="mx-auto grid max-w-page gap-12 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-12 lg:gap-8 lg:px-8">
+    <section id="demo" className="relative">
+      <div aria-hidden className="divider-fade" />
+      <div aria-hidden className="glow-corners pointer-events-none absolute inset-0" />
+      <div className="relative mx-auto grid max-w-page gap-12 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="lg:col-span-5">
-          <p className="meta">
-            <span className="text-ink">10</span>
-            <span className="mx-2 text-rule-strong">/</span>
+          <p className="pill-grad">
+            <span className="text-sunset font-medium">10</span>
             Demo
           </p>
-          <h2 className="mt-6 max-w-[16ch] text-h2 font-semibold">See your week in it.</h2>
+          <h2 className="text-gradient mt-6 max-w-[16ch] text-h2 font-medium">See your week in it.</h2>
           <p className="mt-5 max-w-[40ch] text-[17px] leading-relaxed text-ink-2">
             30 minutes with the team that builds it. You'll see:
           </p>
           <ul className="mt-8 space-y-4">
             {AGENDA.map((item) => (
               <li key={item} className="flex gap-3 text-[15px] leading-snug text-ink">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-data" aria-hidden />
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-mint" aria-hidden />
                 {item}
               </li>
             ))}
@@ -111,25 +112,25 @@ export default function DemoRequest() {
                 href={whatsappUrl("Hi iCodeJr team, I'd like to learn more about iCodeJr LMS for my academy.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-2 text-[15px] font-medium text-ink hover:text-data"
+                className="mt-1 inline-flex items-center gap-2 py-2 text-[15px] font-medium text-ink hover:text-data"
               >
                 <MessageCircle className="h-4 w-4" aria-hidden />
                 WhatsApp <span className="num">{formatPhoneDisplay(SALES_WHATSAPP)}</span>
               </a>
             </div>
             <img
-              src="/mascot/mascot-wave.webp"
+              src="/mascot/mascot-wave-still.webp"
               alt=""
               width={226}
               height={320}
               loading="lazy"
-              className="-mb-1 h-24 w-auto motion-reduce:hidden"
+              className="-mb-1 h-24 w-auto motion-safe:animate-floaty"
             />
           </div>
         </div>
 
         <div className="lg:col-span-6 lg:col-start-7">
-          <div className="rounded-frame border border-rule-strong bg-surface-2 p-5 sm:p-8">
+          <div className="card p-5 sm:p-8">
             {result ? (
               <ResultPanel result={result} name={form.name.trim()} email={form.email.trim()} onReset={() => setResult(null)} />
             ) : (
@@ -188,7 +189,7 @@ export default function DemoRequest() {
 }
 
 const CHEVRON =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%235c6b78' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")";
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23a39fc0' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")";
 
 function Field({
   id,
@@ -230,7 +231,7 @@ function ResultPanel({ result, name, email, onReset }: { result: Result; name: s
     return (
       <div role="status" className="py-6">
         <p className="meta text-ok">Request received</p>
-        <h3 className="mt-3 text-h3 font-semibold">Thanks{first ? `, ${first}` : ""}.</h3>
+        <h3 className="mt-3 text-h3 font-medium">Thanks{first ? `, ${first}` : ""}.</h3>
         <p className="mt-3 max-w-[44ch] text-[15px] leading-relaxed text-ink-2">
           We'll reply to <span className="font-medium text-ink">{email}</span> to agree a time for your walkthrough.
         </p>
@@ -243,7 +244,7 @@ function ResultPanel({ result, name, email, onReset }: { result: Result; name: s
   return (
     <div role="status" className="py-6">
       <p className="meta text-data">One more step</p>
-      <h3 className="mt-3 text-h3 font-semibold">
+      <h3 className="mt-3 text-h3 font-medium">
         {result.opened ? "Press send in WhatsApp." : "Send your request on WhatsApp."}
       </h3>
       <p className="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-ink-2">

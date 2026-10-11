@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SectionProps {
@@ -9,33 +9,54 @@ interface SectionProps {
   intro?: ReactNode;
   children?: ReactNode;
   className?: string;
-  /** "surface" sits on white instead of the ledger canvas */
+  /** "surface" adds brand-coloured light in the corners of the band */
   tone?: "canvas" | "surface";
 }
 
-/** Page section with a ruled top edge and a mono index, like a numbered ledger page. */
+/** Page section: numbered pill, soft-white headline, content below. */
 export function Section({ id, index, label, title, intro, children, className, tone = "canvas" }: SectionProps) {
   return (
-    <section
-      id={id}
-      className={cn("border-t border-rule", tone === "surface" ? "bg-surface" : "bg-canvas", className)}
-    >
-      <div className="mx-auto max-w-page px-4 py-16 sm:px-6 md:py-24 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-12 md:gap-8">
-          <p className="meta md:col-span-3 md:pt-3">
-            <span className="text-ink">{index}</span>
-            <span className="mx-2 text-rule-strong">/</span>
+    <section id={id} className={cn("relative", className)}>
+      <div aria-hidden className="divider-fade" />
+      {tone === "surface" && <div aria-hidden className="glow-corners pointer-events-none absolute inset-0" />}
+      <div className="relative mx-auto max-w-page px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+        <div data-reveal className="mx-auto max-w-[760px] text-center">
+          <p className="pill-grad">
+            <span className="text-sunset font-medium">{index}</span>
             {label}
           </p>
-          <div className="md:col-span-9">
-            <h2 className="max-w-[22ch] text-h2 font-semibold text-ink">{title}</h2>
-            {intro && <div className="mt-5 max-w-[62ch] text-[17px] leading-relaxed text-ink-2">{intro}</div>}
-          </div>
+          <h2 className="text-gradient mt-6 text-h2 font-medium">{title}</h2>
+          {intro && <div className="mx-auto mt-4 max-w-[52ch] text-[18px] leading-relaxed text-ink-3">{intro}</div>}
         </div>
-        {children && <div className="mt-12 md:mt-16">{children}</div>}
+        {children && (
+          <div data-reveal style={{ "--reveal-delay": "90ms" } as CSSProperties} className="mt-12 md:mt-16">
+            {children}
+          </div>
+        )}
       </div>
     </section>
   );
+}
+
+// Literal names so Tailwind keeps the classes
+const stageTone = {
+  sunset: "stage-sunset",
+  candy: "stage-candy",
+  aurora: "stage-aurora",
+  dusk: "stage-dusk",
+} as const;
+
+/** Vivid gradient tile that a light product screen sits on. */
+export function Stage({
+  tone = "sunset",
+  children,
+  className,
+}: {
+  tone?: keyof typeof stageTone;
+  children: ReactNode;
+  className?: string;
+}) {
+  return <div className={cn("stage", stageTone[tone], className)}>{children}</div>;
 }
 
 interface FrameProps {
@@ -46,22 +67,22 @@ interface FrameProps {
   aside?: ReactNode;
 }
 
-/** Product window. The path label stands in for the portal route the screen lives at. */
+/** Product window, rendered light like the LMS itself. The path stands in for the portal route. */
 export function Frame({ path, children, className, bodyClassName, aside }: FrameProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-frame border border-rule-strong bg-surface shadow-[0_1px_0_hsl(var(--rule)),0_24px_48px_-32px_hsl(var(--ink)/0.25)]",
+        "light frame-cq overflow-hidden rounded-frame bg-surface shadow-[0_24px_60px_-24px_rgb(0_0_0/0.55)]",
         className,
       )}
     >
-      <div className="flex h-10 items-center justify-between gap-3 border-b border-rule bg-surface-2 px-4">
-        <span className="truncate font-mono text-[12px] text-ink-3">
-          <span className="text-ink-2">icodejr</span>
-          <span className="mx-1 text-rule-strong">/</span>
+      <div className="flex h-11 items-center justify-between gap-3 border-b border-rule bg-surface-2 px-4">
+        <span className="min-w-0 whitespace-nowrap text-[12.5px] text-ink-3">
+          <span className="cq-wide font-medium text-ink-2">icodejr</span>
+          <span className="cq-wide mx-1.5 text-rule-strong">/</span>
           {path}
         </span>
-        {aside}
+        {aside && <span className="shrink-0">{aside}</span>}
       </div>
       <div className={cn("text-[13px]", bodyClassName)}>{children}</div>
     </div>
@@ -98,7 +119,7 @@ export function Initials({ name, className }: { name: string; className?: string
     <span
       aria-hidden
       className={cn(
-        "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy/10 text-[10px] font-semibold text-navy",
+        "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-data/10 text-[10px] font-semibold text-data",
         className,
       )}
     >

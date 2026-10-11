@@ -1,65 +1,44 @@
 import * as Accordion from "@radix-ui/react-accordion";
-import { Plus } from "lucide-react";
-import { Section } from "./primitives";
+import { ChevronDown } from "lucide-react";
+import { FAQ } from "@/content/faq";
 
-const QUESTIONS: { q: string; a: string }[] = [
-  {
-    q: "Do we need our own Zoom account?",
-    a: "Yes. Connect it once and the platform creates, moves and deletes meetings for you.",
-  },
-  {
-    q: "What if an instructor doesn't show up?",
-    a: "They're nudged at 3 minutes. At 20, the session is marked no-show, the credit goes back and ops is alerted. Admins can override with a reason.",
-  },
-  {
-    q: "How do parents get recordings?",
-    a: "In their portal, automatically. Links are signed for two hours and recordings are kept for six months.",
-  },
-  {
-    q: "Families in other time zones?",
-    a: "Everyone sees sessions in their own local time.",
-  },
-  {
-    q: "Who can see what?",
-    a: "Access is set by role and enforced in the database. Parents see only their children; instructors only their classes.",
-  },
-  {
-    q: "Can we connect our own tools?",
-    a: "Yes. Events are forwarded to your n8n webhook for Sheets, a CRM or WhatsApp flows.",
-  },
-  {
-    q: "How is it priced?",
-    a: "Per conducted session. No seat licences, no fee for inactive users.",
-  },
-  {
-    q: "How do we switch over?",
-    a: "We plan the move of your students, instructors and timetable with you on the demo call.",
-  },
-];
 
 export default function Faq() {
   return (
-    <Section id="faq" index="09" label="FAQ" title="Before you switch.">
-      <div className="grid gap-6 md:grid-cols-12 md:gap-8">
-        <Accordion.Root type="single" collapsible className="border-t border-ink md:col-span-9 md:col-start-4">
-          {QUESTIONS.map((item, i) => (
-            <Accordion.Item key={item.q} value={`q${i}`} className="border-b border-rule">
+    <section id="faq" className="relative">
+      <div aria-hidden className="divider-fade" />
+      <div className="mx-auto grid max-w-page gap-10 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-12 lg:gap-12 lg:px-8">
+        <div className="lg:col-span-4">
+          <h2 className="text-gradient text-[clamp(2.5rem,1.6rem+3vw,3.5rem)] font-medium leading-tight">FAQs</h2>
+          <p className="mt-3 max-w-[32ch] text-[17px] leading-relaxed text-ink-3">
+            The things academies ask us before they switch.
+          </p>
+          <a href="#demo" className="btn btn-primary mt-7">
+            Book a demo
+          </a>
+        </div>
+        <Accordion.Root type="single" collapsible className="space-y-3 lg:col-span-8">
+          {FAQ.map((item, i) => (
+            <Accordion.Item key={item.q} value={`q${i}`} className="card overflow-hidden transition-colors hover:border-rule-strong data-[state=open]:border-brand/60">
               <Accordion.Header>
-                <Accordion.Trigger className="group flex w-full items-center justify-between gap-6 py-5 text-left text-[17px] font-medium text-ink transition-colors hover:text-navy">
+                <Accordion.Trigger className="group flex w-full items-center justify-between gap-6 px-5 py-4 text-left font-display text-[16.5px] font-medium text-ink sm:px-6">
                   {item.q}
-                  <Plus
-                    className="h-4 w-4 shrink-0 text-ink-3 transition-transform duration-200 group-data-[state=open]:rotate-45"
+                  <ChevronDown
+                    className="h-4 w-4 shrink-0 text-ink-3 transition-transform duration-200 group-data-[state=open]:rotate-180"
                     aria-hidden
                   />
                 </Accordion.Trigger>
               </Accordion.Header>
-              <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                <p className="max-w-[68ch] pb-6 text-[15.5px] leading-relaxed text-ink-2">{item.a}</p>
+              <Accordion.Content
+                forceMount
+                className="overflow-hidden data-[state=closed]:hidden data-[state=open]:animate-accordion-down"
+              >
+                <p className="max-w-[64ch] px-5 pb-5 text-[15.5px] leading-relaxed text-ink-3 sm:px-6">{item.a}</p>
               </Accordion.Content>
             </Accordion.Item>
           ))}
         </Accordion.Root>
       </div>
-    </Section>
+    </section>
   );
 }

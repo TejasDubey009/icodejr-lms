@@ -1,6 +1,7 @@
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { m } from "framer-motion";
 import { Check } from "lucide-react";
-import { Frame, Section } from "./primitives";
+import { Frame, Section, Stage } from "./primitives";
 import {
   AdminMock,
   CounsellorMock,
@@ -108,10 +109,11 @@ const PORTALS: Portal[] = [
   },
 ];
 
+const STAGE_TONES = ["candy", "aurora", "sunset", "dusk"] as const;
+
 export default function Portals() {
   const [active, setActive] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const portal = PORTALS[active];
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const keys: Record<string, number> = {
@@ -139,75 +141,85 @@ export default function Portals() {
       title="Nine portals. One academy."
       intro={<p>Same session: a Start button for the instructor, Join for the family, a status for ops.</p>}
     >
-      <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
-        <div
-          role="tablist"
-          aria-label="Portals by role"
-          aria-orientation="vertical"
-          onKeyDown={onKeyDown}
-          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:col-span-3 lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-t lg:border-ink lg:px-0 [&::-webkit-scrollbar]:hidden"
-        >
-          {PORTALS.map((p, i) => {
-            const selected = i === active;
-            return (
-              <button
-                key={p.id}
-                ref={(el) => (tabRefs.current[i] = el)}
-                role="tab"
-                id={`tab-${p.id}`}
-                aria-selected={selected}
-                aria-controls={`panel-${p.id}`}
-                tabIndex={selected ? 0 : -1}
-                onClick={() => setActive(i)}
-                className={cn(
-                  "group shrink-0 text-left transition-colors",
-                  "rounded-full border px-3.5 py-1.5 text-[14px] lg:rounded-none lg:border-0 lg:border-b lg:border-rule lg:px-0 lg:py-3.5",
-                  selected
-                    ? "border-ink bg-ink text-white lg:bg-transparent lg:text-ink"
-                    : "border-rule-strong text-ink-2 hover:text-ink lg:bg-transparent",
-                )}
-              >
-                <span className="flex items-baseline gap-3">
-                  <span
-                    className={cn(
-                      "num hidden font-mono text-[11px] lg:inline",
-                      selected ? "text-data" : "text-ink-3",
-                    )}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className={cn("lg:text-[16px]", selected && "font-semibold")}>{p.role}</span>
-                </span>
-                <span className="ml-[30px] hidden text-[12.5px] text-ink-3 lg:block">{p.who}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div
-          role="tabpanel"
-          id={`panel-${portal.id}`}
-          aria-labelledby={`tab-${portal.id}`}
-          className="grid gap-8 lg:col-span-9 xl:grid-cols-9"
-        >
-          <div className="xl:col-span-4">
-            <p className="text-h3 font-semibold text-ink">{portal.summary}</p>
-            <ul className="mt-6 space-y-3.5">
-              {portal.can.map((c) => (
-                <li key={c} className="flex gap-3 text-[15px] leading-snug text-ink-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-data" aria-hidden />
-                  {c}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="xl:col-span-5">
-            <Frame key={portal.id} path={portal.path} className="animate-in fade-in duration-300" bodyClassName="min-h-[340px]">
-              {portal.mock}
-            </Frame>
-          </div>
-        </div>
+      <div
+        role="tablist"
+        aria-label="Portals by role"
+        onKeyDown={onKeyDown}
+        className="flex flex-wrap justify-center gap-2"
+      >
+        {PORTALS.map((p, i) => {
+          const selected = i === active;
+          return (
+            <button
+              key={p.id}
+              ref={(el) => (tabRefs.current[i] = el)}
+              role="tab"
+              id={`tab-${p.id}`}
+              aria-selected={selected}
+              aria-controls={`panel-${p.id}`}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => setActive(i)}
+              className={cn(
+                "relative isolate rounded-full border px-4 py-2 font-display text-[14.5px] transition-colors duration-200",
+                selected
+                  ? "border-brand font-medium text-night"
+                  : "border-rule-strong/60 bg-surface/70 text-ink-2 hover:border-brand hover:text-ink",
+              )}
+            >
+              {/* One highlight that slides between tabs */}
+              {selected && (
+                <m.span
+                  aria-hidden
+                  layoutId="portal-pill"
+                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  className="absolute inset-0 -z-10 rounded-full bg-brand"
+                />
+              )}
+              {p.role}
+            </button>
+          );
+        })}
       </div>
+
+      {/* Every panel's copy is in the page for search engines; only the open one shows its screen */}
+      {PORTALS.map((p, i) => {
+        const selected = i === active;
+        return (
+          <div
+            key={p.id}
+            role="tabpanel"
+            id={`panel-${p.id}`}
+            aria-labelledby={`tab-${p.id}`}
+            hidden={!selected}
+            className={cn("mt-10 items-center gap-10 lg:grid-cols-12 lg:gap-12", selected && "grid")}
+          >
+            <div className="lg:col-span-5">
+              <p className="meta">{p.who}</p>
+              <h3 className="mt-2 text-h3 font-medium text-ink">{p.summary}</h3>
+              <ul className="mt-6">
+                {p.can.map((c) => (
+                  <li
+                    key={c}
+                    className="flex gap-3 border-t border-rule py-4 text-[16px] leading-snug text-ink-2 last:border-b"
+                  >
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-mint" aria-hidden />
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="lg:col-span-7">
+              {selected && (
+                <Stage tone={STAGE_TONES[i % STAGE_TONES.length]} className="animate-in fade-in zoom-in-[0.985] duration-300">
+                  <Frame path={p.path} bodyClassName="min-h-[340px]">
+                    {p.mock}
+                  </Frame>
+                </Stage>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </Section>
   );
 }
